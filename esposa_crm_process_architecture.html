@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ESPOSA CRM — Enterprise Process Architecture</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --bg:#FAFAF8;--bg2:#F2F1EC;--bg3:#E8E6DE;
+    --surface:#FFFFFF;--surface2:#F7F6F2;
+    --border:#D8D5CA;--border2:#C8C5B8;
+    --text:#1A1916;--text2:#4A4840;--text3:#7A7668;
+    --accent:#2D4E8E;--accent-light:#E8EFF8;--accent-mid:#B8CCEE;
+    --teal:#1A6B5A;--teal-light:#E3F2ED;--teal-mid:#8ECEC2;
+    --coral:#C4421A;--coral-light:#FAEEE9;--coral-mid:#F0A88C;
+    --amber:#9A5C00;--amber-light:#FDF3E3;--amber-mid:#F5C67A;
+    --purple:#5C3A8A;--purple-light:#F2EDF8;--purple-mid:#C8AAEE;
+    --green:#2A5E2A;--green-light:#EBF5EB;--green-mid:#8FCC8F;
+    --red:#8A1A1A;--red-light:#F8EAEA;--red-mid:#EE9090;
+    --gray:#4A4840;--gray-light:#F2F1EC;
+    --shadow:0 1px 3px rgba(0,0,0,0.06),0 1px 2px rgba(0,0,0,0.04);
+    --shadow-md:0 4px 12px rgba(0,0,0,0.08),0 2px 4px rgba(0,0,0,0.04);
+  }
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5}
+  /* NAV */
+  .nav{position:sticky;top:0;z-index:100;background:rgba(250,250,248,0.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;gap:0;height:52px}
+  .nav-brand{font-size:13px;font-weight:600;color:var(--accent);letter-spacing:0.04em;text-transform:uppercase;margin-right:32px;white-space:nowrap}
+  .nav-tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1}
+  .nav-tabs::-webkit-scrollbar{display:none}
+  .nav-tab{font-size:12px;font-weight:500;color:var(--text3);padding:6px 14px;border-radius:6px;cursor:pointer;white-space:nowrap;border:none;background:none;transition:all .15s}
+  .nav-tab:hover{color:var(--text2);background:var(--bg2)}
+  .nav-tab.active{color:var(--accent);background:var(--accent-light)}
+  /* PAGES */
+  .page{display:none;padding:32px 24px 64px;max-width:1360px;margin:0 auto}
+  .page.active{display:block}
+  /* PAGE HEADER */
+  .page-header{margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:24px}
+  .page-header h1{font-size:22px;font-weight:600;color:var(--text);margin-bottom:4px}
+  .page-header p{font-size:14px;color:var(--text3);max-width:680px}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;letter-spacing:0.02em}
+  .badge-blue{background:var(--accent-light);color:var(--accent)}
+  .badge-teal{background:var(--teal-light);color:var(--teal)}
+  .badge-coral{background:var(--coral-light);color:var(--coral)}
+  .badge-amber{background:var(--amber-light);color:var(--amber)}
+  .badge-purple{background:var(--purple-light);color:var(--purple)}
+  .badge-green{background:var(--green-light);color:var(--green)}
+  .badge-red{background:var(--red-light);color:var(--red)}
+  .badge-gray{background:var(--gray-light);color:var(--gray)}
+  /* CARDS */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px 24px}
+  .card-sm{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px 16px}
+  .card-accent{border-left:3px solid var(--accent)}
+  .card-teal{border-left:3px solid var(--teal)}
+  .card-coral{border-left:3px solid var(--coral)}
+  .card-amber{border-left:3px solid var(--amber)}
+  /* GRIDS */
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+  .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .grid-auto{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+  @media(max-width:900px){.grid-2,.grid-3,.grid-4{grid-template-columns:1fr}}
+  /* SECTION LABELS */
+  .sec-label{font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+  .sec-label::after{content:'';flex:1;height:1px;background:var(--border)}
+  h2.sec{font-size:16px;font-weight:600;color:var(--text);margin:32px 0 16px}
+  h3.sub{font-size:14px;font-weight:600;color:var(--text);margin:20px 0 10px}
+  /* SWIMLANE FLOW */
+  .flow-wrap{overflow-x:auto;padding-bottom:8px}
+  .swimlane{display:grid;border:1px solid var(--border);border-radius:12px;overflow:hidden;min-width:900px}
+  .swimlane-row{display:grid;grid-template-columns:120px 1fr;border-bottom:1px solid var(--border2)}
+  .swimlane-row:last-child{border-bottom:none}
+  .lane-label{background:var(--bg2);padding:16px 14px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:0.06em;text-align:center;line-height:1.3;border-right:1px solid var(--border2)}
+  .lane-label.blue{background:var(--accent-light);color:var(--accent)}
+  .lane-label.teal{background:var(--teal-light);color:var(--teal)}
+  .lane-label.coral{background:var(--coral-light);color:var(--coral)}
+  .lane-label.amber{background:var(--amber-light);color:var(--amber)}
+  .lane-label.purple{background:var(--purple-light);color:var(--purple)}
+  .lane-content{padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--surface)}
+  /* FLOW NODES */
+  .node{display:inline-flex;flex-direction:column;align-items:center;gap:3px;min-width:100px;max-width:160px;vertical-align:top}
+  .node-box{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:12px;font-weight:500;color:var(--text);text-align:center;width:100%;line-height:1.35}
+  .node-box.blue{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+  .node-box.teal{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+  .node-box.coral{background:var(--coral-light);border-color:var(--coral-mid);color:var(--coral)}
+  .node-box.amber{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+  .node-box.purple{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple)}
+  .node-box.green{background:var(--green-light);border-color:var(--green-mid);color:var(--green)}
+  .node-box.red{background:var(--red-light);border-color:var(--red-mid);color:var(--red)}
+  .node-box.gray{background:var(--gray-light);border-color:var(--border2);color:var(--gray)}
+  .node-box.diamond{clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);border-radius:0;padding:14px 10px;background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+  .node-sub{font-size:10px;color:var(--text3);text-align:center;line-height:1.3}
+  .arr{color:var(--text3);font-size:14px;align-self:center;flex-shrink:0}
+  .arr-down{display:block;text-align:center;color:var(--text3);font-size:12px;margin:2px auto}
+  /* YES/NO PATHS */
+  .decision-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;margin:8px 0}
+  .decision-box{background:var(--amber-light);border:1px solid var(--amber-mid);color:var(--amber);border-radius:8px;padding:8px 16px;font-size:12px;font-weight:600;text-align:center}
+  .decision-paths{display:grid;grid-template-columns:1fr 1fr;gap:24px;width:100%;margin-top:4px}
+  .path-yes,.path-no{display:flex;flex-direction:column;gap:6px;align-items:center}
+  .path-label{font-size:11px;font-weight:700;padding:2px 8px;border-radius:4px}
+  .path-label.yes{background:var(--green-light);color:var(--green)}
+  .path-label.no{background:var(--red-light);color:var(--red)}
+  /* STEP SEQUENCE */
+  .steps{display:flex;flex-direction:column;gap:0}
+  .step{display:flex;gap:14px;padding:12px 0;border-bottom:1px solid var(--border)}
+  .step:last-child{border-bottom:none}
+  .step-num{width:26px;height:26px;border-radius:50%;background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+  .step-body h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px}
+  .step-body p{font-size:12px;color:var(--text2);line-height:1.5}
+  .step-body .tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+  /* ACTOR CHIPS */
+  .actor{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:3px 8px;border-radius:4px;border:1px solid var(--border)}
+  .actor.user{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+  .actor.system{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+  .actor.manager{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple)}
+  .actor.erp{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+  .actor.ext{background:var(--coral-light);border-color:var(--coral-mid);color:var(--coral)}
+  /* INTEGRATION MAP */
+  .int-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}
+  .int-card{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:14px}
+  .int-card h4{font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px}
+  .int-card .direction{font-size:11px;color:var(--text3);margin-bottom:4px}
+  .int-card .desc{font-size:11px;color:var(--text2);line-height:1.4}
+  /* DATA FIELDS */
+  .field-table{width:100%;border-collapse:collapse;font-size:12px}
+  .field-table th{background:var(--bg2);padding:8px 12px;text-align:left;font-size:11px;font-weight:600;color:var(--text3);letter-spacing:0.04em;text-transform:uppercase;border-bottom:1px solid var(--border)}
+  .field-table td{padding:8px 12px;border-bottom:1px solid var(--border);vertical-align:top;color:var(--text2)}
+  .field-table tr:last-child td{border-bottom:none}
+  .field-table td:first-child{font-weight:500;color:var(--text);font-family:'DM Mono',monospace;font-size:11px}
+  .req{color:var(--coral);font-size:10px;font-weight:700}
+  /* STATUS CHIPS */
+  .status-flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:12px 0}
+  .status{font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid}
+  .status.s0{background:#F2F1EC;border-color:#C8C5B8;color:#4A4840}
+  .status.s1{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+  .status.s2{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+  .status.s3{background:var(--green-light);border-color:var(--green-mid);color:var(--green)}
+  .status.s4{background:var(--red-light);border-color:var(--red-mid);color:var(--red)}
+  .status.s5{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+  .status.s6{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple)}
+  .arr-sm{color:var(--text3);font-size:11px}
+  /* GAP FLAGS */
+  .gap-flag{background:var(--amber-light);border:1px solid var(--amber-mid);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--amber);display:flex;gap:8px;align-items:flex-start;margin:8px 0}
+  .gap-icon{font-weight:700;font-size:13px;flex-shrink:0}
+  /* ASSUMPTION */
+  .assumption{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--accent);display:flex;gap:8px;align-items:flex-start;margin:8px 0}
+  /* OPEN ITEM */
+  .open-item{background:var(--red-light);border:1px solid var(--red-mid);border-radius:6px;padding:10px 14px;font-size:12px;color:var(--red);display:flex;gap:8px;align-items:flex-start;margin:8px 0}
+  /* DIVIDER */
+  hr.sec{border:none;border-top:1px solid var(--border);margin:28px 0}
+  /* ORG TREE */
+  .org-tree{font-size:12px}
+  .org-root{background:var(--accent);color:#fff;border-radius:8px;padding:8px 16px;display:inline-block;font-weight:600;margin-bottom:12px}
+  .org-level{display:flex;gap:12px;flex-wrap:wrap;margin-left:24px;padding-left:12px;border-left:2px solid var(--border);padding-top:8px;margin-bottom:8px}
+  .org-country{background:var(--accent-light);border:1px solid var(--accent-mid);border-radius:8px;padding:8px 14px}
+  .org-country h4{font-size:11px;font-weight:700;color:var(--accent);text-transform:uppercase;letter-spacing:0.04em;margin-bottom:6px}
+  .org-store{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text2);margin-bottom:4px}
+  /* INLINE TABLE */
+  .info-row{display:flex;border-bottom:1px solid var(--border);padding:8px 0;gap:12px}
+  .info-row:last-child{border-bottom:none}
+  .info-k{font-size:12px;font-weight:500;color:var(--text3);min-width:200px;flex-shrink:0}
+  .info-v{font-size:12px;color:var(--text2)}
+  /* PROCESS FLOW VERTICAL */
+  .vflow{display:flex;flex-direction:column;gap:0;position:relative}
+  .vflow-item{display:flex;gap:14px;padding:10px 0 10px 0;position:relative}
+  .vflow-item::before{content:'';position:absolute;left:13px;top:36px;bottom:-10px;width:1px;background:var(--border);z-index:0}
+  .vflow-item:last-child::before{display:none}
+  .vflow-dot{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--surface);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text3);flex-shrink:0;z-index:1;margin-top:2px}
+  .vflow-dot.blue{background:var(--accent-light);border-color:var(--accent-mid);color:var(--accent)}
+  .vflow-dot.teal{background:var(--teal-light);border-color:var(--teal-mid);color:var(--teal)}
+  .vflow-dot.coral{background:var(--coral-light);border-color:var(--coral-mid);color:var(--coral)}
+  .vflow-dot.amber{background:var(--amber-light);border-color:var(--amber-mid);color:var(--amber)}
+  .vflow-dot.purple{background:var(--purple-light);border-color:var(--purple-mid);color:var(--purple)}
+  .vflow-dot.green{background:var(--green-light);border-color:var(--green-mid);color:var(--green)}
+  .vflow-body h4{font-size:13px;font-weight:600;color:var(--text);margin-bottom:2px}
+  .vflow-body p{font-size:12px;color:var(--text2);line-height:1.5}
+  .vflow-body .sub-steps{margin-top:8px;display:flex;flex-direction:column;gap:4px}
+  .sub-step{font-size:11px;color:var(--text2);padding:4px 10px;background:var(--bg2);border-radius:4px;border-left:2px solid var(--border2)}
+  .sub-step.blue{border-color:var(--accent-mid);background:var(--accent-light);color:var(--accent)}
+  .sub-step.teal{border-color:var(--teal-mid);background:var(--teal-light);color:var(--teal)}
+  .sub-step.coral{border-color:var(--coral-mid);background:var(--coral-light);color:var(--coral)}
+  .sub-step.amber{border-color:var(--amber-mid);background:var(--amber-light);color:var(--amber)}
+  .sub-step.red{border-color:var(--red-mid);background:var(--red-light);color:var(--red)}
+  .sub-step.green{border-color:var(--green-mid);background:var(--green-light);color:var(--green)}
+  /* METRIC CARDS */
+  .metric-card{background:var(--surface2);border-radius:8px;padding:14px 16px;border:1px solid var(--border)}
+  .metric-num{font-size:24px;font-weight:600;color:var(--text);margin-top:4px}
+  .metric-label{font-size:12px;color:var(--text3)}
+  /* SCROLL INDICATOR */
+  .scroll-note{font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px;margin-bottom:8px}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <span class="nav-brand">ESPOSA CRM</span>
+  <div class="nav-tabs" id="navTabs">
+    <button class="nav-tab active" onclick="showPage('overview')">Overview</button>
+    <button class="nav-tab" onclick="showPage('biz')">Business Structure</button>
+    <button class="nav-tab" onclick="showPage('lead')">Lead & Opportunity</button>
+    <button class="nav-tab" onclick="showPage('booking')">Booking Engine</button>
+    <button class="nav-tab" onclick="showPage('bridal')">Bridal Journey</button>
+    <button class="nav-tab" onclick="showPage('custommade')">Custom-Made Flow</button>
+    <button class="nav-tab" onclick="showPage('rental')">Rental Lifecycle</button>
+    <button class="nav-tab" onclick="showPage('payments')">Payments & ERP</button>
+    <button class="nav-tab" onclick="showPage('integrations')">Integrations</button>
+    <button class="nav-tab" onclick="showPage('roles')">Roles & Permissions</button>
+    <button class="nav-tab" onclick="showPage('exceptions')">Exceptions & Escalations</button>
+    <button class="nav-tab" onclick="showPage('gaps')">Gaps & Assumptions</button>
+  </div>
+</nav>
+
+<!-- PAGE 1: OVERVIEW -->
+<div class="page active" id="page-overview">
+  <div class="page-header">
+    <h1>ESPOSA CRM & Booking System — Process Architecture</h1>
+    <p>Enterprise-grade process design derived from 5 Discovery Sessions (18–22 May 2026). Covers UAE, KSA, Lebanon, Qatar operations across 7 stores, 4 brands, Zoho One + Noria ERP integration.</p>
+  </div>
+
+  <div class="sec-label">Business Objectives</div>
+  <div class="grid-4" style="margin-bottom:28px">
+    <div class="metric-card"><div class="metric-label">Countries</div><div class="metric-num">4</div><div style="font-size:11px;color:var(--text3);margin-top:2px">UAE · KSA · Lebanon · Qatar</div></div>
+    <div class="metric-card"><div class="metric-label">Live Stores</div><div class="metric-num">7</div><div style="font-size:11px;color:var(--text3);margin-top:2px">6 today + Qatar planned</div></div>
+    <div class="metric-card"><div class="metric-label">Brands</div><div class="metric-num">4</div><div style="font-size:11px;color:var(--text3);margin-top:2px">ESPOSA · Prive · Kristie · Plume</div></div>
+    <div class="metric-card"><div class="metric-label">CRM Org</div><div class="metric-num">1</div><div style="font-size:11px;color:var(--text3);margin-top:2px">Single Zoho CRM for all countries</div></div>
+  </div>
+
+  <div class="sec-label">Zoho One Product Stack</div>
+  <div class="int-grid" style="margin-bottom:28px">
+    <div class="int-card"><h4>Zoho CRM</h4><div class="direction">Central Hub</div><div class="desc">Customer profiles, leads, opportunities, contacts, accounts, sales orders</div></div>
+    <div class="int-card"><h4>Zoho Creator</h4><div class="direction">Custom App</div><div class="desc">Booking & appointment engine — fitting rooms, consultant scheduling, calendar</div></div>
+    <div class="int-card"><h4>Zoho Flow</h4><div class="direction">Integration Layer</div><div class="desc">ERP (Noria) integration: sales orders, receipt vouchers, stock sync</div></div>
+    <div class="int-card"><h4>Zoho Analytics</h4><div class="direction">Reporting</div><div class="desc">Dashboards, footfall, conversion, revenue, tailor efficiency reports</div></div>
+    <div class="int-card"><h4>Zoho Campaigns</h4><div class="direction">Marketing</div><div class="desc">Appointment reminders, congratulations emails, follow-up campaigns</div></div>
+    <div class="int-card"><h4>Zoho SalesIQ</h4><div class="direction">Website</div><div class="desc">Knowledge-base chatbot, visitor tracking on Shopify</div></div>
+    <div class="int-card"><h4>Zoho Social + LeadChain</h4><div class="direction">Social Channels</div><div class="desc">Instagram, Facebook, TikTok, Snapchat — 1 license included, 2 more needed</div></div>
+    <div class="int-card"><h4>Zoho WorkDrive</h4><div class="direction">Document Storage</div><div class="desc">High-resolution dress images, signed contracts, measurement sheets</div></div>
+  </div>
+
+  <div class="sec-label">End-to-End Customer Journey (Top Level)</div>
+  <div class="card" style="margin-bottom:28px">
+    <div class="status-flow">
+      <div class="status s5">First Contact</div><span class="arr-sm">→</span>
+      <div class="status s0">Lead Created</div><span class="arr-sm">→</span>
+      <div class="status s1">Qualification</div><span class="arr-sm">→</span>
+      <div class="status s5">Opportunity</div><span class="arr-sm">→</span>
+      <div class="status s1">Payment (if req'd)</div><span class="arr-sm">→</span>
+      <div class="status s2">Appointment Booked</div><span class="arr-sm">→</span>
+      <div class="status s5">Store Visit / Fitting</div><span class="arr-sm">→</span>
+      <div class="status s6">Sales Order → Noria</div><span class="arr-sm">→</span>
+      <div class="status s2">Alterations Cycle</div><span class="arr-sm">→</span>
+      <div class="status s3">Delivery + Invoice</div><span class="arr-sm">→</span>
+      <div class="status s3">Post-Sale Follow-Up</div>
+    </div>
+    <div style="margin-top:12px;font-size:12px;color:var(--text3)">⚠ Sales Order → Final Invoice gap can span 1 month to 18 months. CRM never invoices — the ERP raises Sales Order and final Sales Invoice on delivery day.</div>
+  </div>
+
+  <div class="sec-label">Key Architectural Decisions</div>
+  <div class="grid-2">
+    <div class="card card-accent">
+      <h3 class="sub" style="margin-top:0">CRM Architecture</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot blue">1</div><div class="vflow-body"><h4>Single Zoho CRM Org</h4><p>All countries, stores, brands in one organisation. Country/store segregated by config, roles, and permissions.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">2</div><div class="vflow-body"><h4>Base Currency: USD</h4><p>Per-opportunity local currency (AED, SAR, LBP). Admin-only exchange rates. Cannot change once set.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">3</div><div class="vflow-body"><h4>ERP-Independent Design</h4><p>Minimal Noria customisation. CRM built so Noria can be replaced post-project without restructuring.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">4</div><div class="vflow-body"><h4>Booking Engine: Zoho Creator App</h4><p>Separate custom app, connected to CRM. Opened via button on CRM Opportunity record.</p></div></div>
+      </div>
+    </div>
+    <div class="card card-teal">
+      <h3 class="sub" style="margin-top:0">Business Rules</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot teal">1</div><div class="vflow-body"><h4>CRM Never Invoices</h4><p>All invoicing in Noria ERP. CRM sends Sales Orders and receives payment status back via webhook.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot teal">2</div><div class="vflow-body"><h4>Wholesale Out of Scope</h4><p>Only retail in CRM. Vendor/wholesale flows remain entirely in Noria.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot teal">3</div><div class="vflow-body"><h4>Multi-Fitting Post-Sale</h4><p>Journey continues long after Sales Order: fittings, alterations, trials. Final invoice only on delivery day.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot teal">4</div><div class="vflow-body"><h4>Human-Led Confirmation</h4><p>All appointment confirmations are manual human steps (call + WhatsApp). No fully automated confirmation.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2: BUSINESS STRUCTURE -->
+<div class="page" id="page-biz">
+  <div class="page-header">
+    <h1>Business Structure & Organisation</h1>
+    <p>Group hierarchy, legal entities, stores, and brands. This structure forms the backbone of all CRM permissions, reporting, and routing logic.</p>
+  </div>
+
+  <div class="sec-label">Organisational Hierarchy</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="org-tree">
+      <div class="org-root">ESPOSA Group (CEO)</div>
+      <div class="org-level">
+        <div class="org-country">
+          <h4>🇦🇪 UAE — Promariage Trading L.L.C.</h4>
+          <div class="org-store">ESPOSA Dubai</div>
+          <div class="org-store">ESPOSA Prive Dubai</div>
+        </div>
+        <div class="org-country">
+          <h4>🇱🇧 Lebanon — Sposamia SARL</h4>
+          <div class="org-store">ESPOSA Downtown Beirut</div>
+          <div class="org-store">ESPOSA DBAYEH</div>
+        </div>
+        <div class="org-country">
+          <h4>🇸🇦 KSA — WDFT</h4>
+          <div class="org-store">ESPOSA Riyadh</div>
+          <div class="org-store">ESPOSA Olaya</div>
+        </div>
+        <div class="org-country" style="border-color:var(--amber-mid);background:var(--amber-light)">
+          <h4 style="color:var(--amber)">🇶🇦 Qatar — TBC</h4>
+          <div class="org-store">ESPOSA Qatar (planned)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Brand Portfolio</div>
+  <div class="grid-4" style="margin-bottom:24px">
+    <div class="card-sm card-accent"><h4 style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:6px">ESPOSA</h4><p style="font-size:11px;color:var(--text2)">Core bridal brand. All stores. Rental + Sale.</p></div>
+    <div class="card-sm card-teal"><h4 style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:6px">ESPOSA Prive</h4><p style="font-size:11px;color:var(--text2)">Premium bridal. UAE (Dubai Prive). Rental + Sale.</p></div>
+    <div class="card-sm card-coral"><h4 style="font-size:12px;font-weight:600;color:var(--coral);margin-bottom:6px">Kristie Romanos</h4><p style="font-size:11px;color:var(--text2)">Couture custom-made. ESPOSA Prive + Riyadh. <strong>Sale only.</strong></p></div>
+    <div class="card-sm card-amber"><h4 style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:6px">Plume by Kristie</h4><p style="font-size:11px;color:var(--text2)">Accessible couture. Rental stores LB/KSA/UAE. First rent or sale.</p></div>
+  </div>
+
+  <div class="sec-label">Special Concepts</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card"><h3 class="sub" style="margin-top:0">We Do by ESPOSA</h3><p style="font-size:12px;color:var(--text2)">Sustainability concept — dresses taken from clients for resale, rent, or donation. Exists as a <strong>section inside ESPOSA store</strong>, not a separate entity. Sourcing managed in Noria ERP only. Inventory visibility is in scope; sourcing flow is out of scope.</p></div>
+    <div class="card"><h3 class="sub" style="margin-top:0">Wholesale (Out of Scope)</h3><p style="font-size:12px;color:var(--text2)">Managed entirely in Noria ERP. CRM focuses exclusively on retail. Vendor inquiries handled outside CRM.</p></div>
+  </div>
+
+  <div class="sec-label">Channel Matrix</div>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Channel</th><th>Status</th><th>CRM Integration</th><th>Notes / Dependency</th></tr></thead>
+    <tbody>
+      <tr><td>Website (Shopify)</td><td><span class="badge badge-green">In Scope</span></td><td>Zoho SalesIQ embed form → CRM Lead</td><td>Each appt type has own Book Now button; type auto-passed to form</td></tr>
+      <tr><td>WhatsApp</td><td><span class="badge badge-amber">Pending Setup</span></td><td>Single central WhatsApp Business number (TBD)</td><td>Meta Business verification required per number; multi-user access</td></tr>
+      <tr><td>Instagram</td><td><span class="badge badge-green">In Scope</span></td><td>LeadChain (3 handles = 3 subscriptions)</td><td>1 included in Zoho One; 2 more to be procured for Prive + KR</td></tr>
+      <tr><td>Facebook / TikTok</td><td><span class="badge badge-green">In Scope</span></td><td>LeadChain</td><td>Full handle list per brand to be shared by ESPOSA</td></tr>
+      <tr><td>Snapchat</td><td><span class="badge badge-amber">Limited</span></td><td>Workaround required</td><td>API limitations; workaround to be designed</td></tr>
+      <tr><td>Phone / Walk-in</td><td><span class="badge badge-green">In Scope</span></td><td>Manual entry → CRM Lead or direct Opportunity</td><td>No cloud telephony; each country answers own calls</td></tr>
+      <tr><td>Email</td><td><span class="badge badge-amber">Pending Config</span></td><td>Gmail domain / Outlook client</td><td>Provider per country to be reconfirmed</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PAGE 3: LEAD & OPPORTUNITY -->
+<div class="page" id="page-lead">
+  <div class="page-header">
+    <h1>Lead Capture, Qualification & Opportunity Lifecycle</h1>
+    <p>Complete flow from first contact to qualified opportunity, including duplicate detection, B2C/B2B paths, and all lifecycle stages.</p>
+  </div>
+
+  <div class="sec-label">Lead Capture — Field Design</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Website Lead Form Fields</h3>
+      <table class="field-table">
+        <thead><tr><th>Field</th><th>Type</th><th>Req</th></tr></thead>
+        <tbody>
+          <tr><td>First Name / Last Name</td><td>Text</td><td><span class="req">●</span></td></tr>
+          <tr><td>Email</td><td>Email</td><td><span class="req">●</span></td></tr>
+          <tr><td>Phone Number + Country Code</td><td>Tel + Validation Pattern</td><td><span class="req">●</span></td></tr>
+          <tr><td>Preferred Branch</td><td>Pick list (live stores)</td><td><span class="req">●</span></td></tr>
+          <tr><td>Preferred Date</td><td>Date picker</td><td><span class="req">●</span></td></tr>
+          <tr><td>Preferred Time Band</td><td>Pick: Before Noon / Afternoon</td><td><span class="req">●</span></td></tr>
+          <tr><td>Wedding Date</td><td>Date picker</td><td></td></tr>
+          <tr><td>Wedding Location</td><td>Pick list</td><td></td></tr>
+          <tr><td>Appointment Type</td><td>Auto-populated from button clicked</td><td><span class="req">●</span></td></tr>
+          <tr><td>Enquiry Type</td><td>Bridal / Evening</td><td><span class="req">●</span></td></tr>
+          <tr><td>Lead Source</td><td>Instagram / Facebook / TikTok / Snapchat / Website / Phone / Walk-in / Vendor / Other</td><td><span class="req">●</span></td></tr>
+          <tr><td>Notes</td><td>Free text</td><td></td></tr>
+        </tbody>
+      </table>
+      <div class="gap-flag" style="margin-top:10px"><span class="gap-icon">⚠</span><span>Country-specific phone validation patterns (digit length + format) still to be confirmed by ESPOSA team.</span></div>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Appointment Types (Book Now Buttons)</h3>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <div class="sub-step blue">Bridal Fitting</div>
+        <div class="sub-step blue">Couture / Custom Made</div>
+        <div class="sub-step blue">Virtual Appointment</div>
+        <div class="sub-step blue">Premium VIP</div>
+        <div class="sub-step blue">Bridal Shower Experience</div>
+        <div class="sub-step blue">Kristie Romanos Collection</div>
+        <div class="sub-step blue">Evening</div>
+      </div>
+      <div style="margin-top:14px;font-size:12px;color:var(--text2)">Each button passes the appointment type silently to the embedded Zoho form. Customer does not see or select it manually. Website team inserts the embed link — no structural change to customer journey.</div>
+    </div>
+  </div>
+
+  <div class="sec-label">Lead Processing Flow</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">Customer</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Submits form on Shopify website</div><div class="node-sub">Name, email, phone, branch, date, type</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box gray">OR: Phone call / Walk-in</div><div class="node-sub">Manual entry by staff</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">System (CRM)</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Lead created in CRM</div><div class="node-sub">Status: New</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Duplicate check</div><div class="node-sub">Phone + Email across all stores</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Duplicate found?</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Auto-route to store + assign rep</div><div class="node-sub">Mobile app / email notification</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label amber">Decision</div>
+        <div class="lane-content" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-red">YES — Duplicate</span>
+            <span style="font-size:12px;color:var(--text2)">→ Warning shown. Consultant calls manager. Manager shares existing record. History + preferences visible.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-green">NO — New Lead</span>
+            <span style="font-size:12px;color:var(--text2)">→ Proceed to qualification.</span>
+          </div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label blue">Coordinator</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Reviews lead</div><div class="node-sub">Opens CRM record</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Qualify or Junk?</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box red">Mark as Junk</div><div class="node-sub">Stays in Leads module for future campaigns</div></div>
+          <span style="color:var(--text3);font-size:12px;padding:0 4px">OR</span>
+          <div class="node"><div class="node-box green">Convert Lead</div><div class="node-sub">Account + Contact + Opportunity created</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">Conversion Path</div>
+        <div class="lane-content" style="flex-direction:column;align-items:flex-start;gap:8px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-accent" style="background:var(--accent-light);color:var(--accent)">B2C (Default)</span>
+            <span style="font-size:12px;color:var(--text2)">→ Bride is the Account. Sister/assistant linked as Contact if applicable. B2B fields hidden.</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="badge badge-purple">B2B (Exception)</span>
+            <span style="font-size:12px;color:var(--text2)">→ Company is Account. Contact person is Contact. VAT number field visible. Separate reporting track.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Opportunity Lifecycle Stages</h2>
+  <div class="card" style="margin-bottom:24px">
+    <div class="status-flow">
+      <div class="status s5">New Opportunity</div><span class="arr-sm">→</span>
+      <div class="status s1">Paid Appt / Payment Not Required</div><span class="arr-sm">→</span>
+      <div class="status s1">Payment Link Sent</div><span class="arr-sm">→</span>
+      <div class="status s2">Payment Received</div><span class="arr-sm">→</span>
+      <div class="status s2">Book Appointment</div><span class="arr-sm">→</span>
+      <div class="status s5">Visits (multiple)</div><span class="arr-sm">→</span>
+      <div class="status s3">Closed Won</div>
+    </div>
+    <div style="margin-top:12px;display:flex;align-items:center;gap:8px">
+      <div class="status s4">Closed Lost</div>
+      <span style="font-size:12px;color:var(--text2)">Reasons: No Show · Cancelled · Wedding Cancelled · Not Interested · Found Dress Elsewhere (note source)</span>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3)">Closed Lost opportunities remain reportable for re-engagement with new collections. Slot held 48hrs pending payment; unpaid raises follow-up reminder but is NOT auto-cancelled.</div>
+  </div>
+
+  <div class="sec-label">Opportunity Key Fields</div>
+  <table class="field-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>Lead Source</td><td>Pick list</td><td>Required. Carried through to Closed Won for campaign ROI reporting.</td></tr>
+      <tr><td>Enquiry Type</td><td>Bridal / Evening</td><td>Separate reporting tracks. Bridal can be cross-promoted for evening.</td></tr>
+      <tr><td>Brand Preference</td><td>Multi-pick</td><td>ESPOSA / Prive / Kristie / Plume</td></tr>
+      <tr><td>Wedding Date</td><td>Date</td><td>Read-only for staff. Drives all reminder scheduling working backwards.</td></tr>
+      <tr><td>Wedding Location</td><td>Pick list</td><td>Determines rental blocking window (inside vs outside country)</td></tr>
+      <tr><td>Ready-to-Wear / Custom-Made</td><td>Toggle + Discrete flag</td><td>Change captured as a mandatory discrete data point for conversion reporting</td></tr>
+      <tr><td>Refundable / Non-Refundable</td><td>Tag</td><td>Default per country. Manager approval to change NR → R. All changes audited.</td></tr>
+      <tr><td>Payment Status</td><td>Pushed from Noria</td><td>Paid / Partially Paid / Fully Paid — for executive view</td></tr>
+      <tr><td>Store / Country</td><td>System-assigned</td><td>Based on lead routing</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PAGE 4: BOOKING ENGINE -->
+<div class="page" id="page-booking">
+  <div class="page-header">
+    <h1>Booking & Appointment Engine</h1>
+    <p>Custom Zoho Creator application connected to CRM. Separate from the CRM itself — opened via a Create Appointment action on the CRM Opportunity.</p>
+  </div>
+
+  <div class="sec-label">Booking Engine Modules</div>
+  <div class="grid-3" style="margin-bottom:24px">
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Daily Dashboard</h4><p style="font-size:11px;color:var(--text2)">Appointments today · Confirmed & ready · Pending payment · Requests waiting · Room utilisation · Overlaps</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Scheduler Views</h4><p style="font-size:11px;color:var(--text2)">By Consultant · By Fitting Room · By Bride. Multi-select stores/consultants. Drag-and-drop reschedule.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Appointment Requests</h4><p style="font-size:11px;color:var(--text2)">Inbound from CRM opportunities. Manual qualification by coordinator before booking.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Fitting Room Master</h4><p style="font-size:11px;color:var(--text2)">Standard / VIP types. No type restrictions — any room for any appointment. Named per store.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Duty Roster</h4><p style="font-size:11px;color:var(--text2)">Excel-style calendar. Weekly/monthly validity. Day off · Break · Leave (annual/sick). Feeds attendance report.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px">Reports</h4><p style="font-size:11px;color:var(--text2)">Appointment by status/type · First visit footfall · Conversion · Cancellation · Tailor efficiency · Staff attendance</p></div>
+  </div>
+
+  <div class="sec-label">Booking Creation Flow</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">Coordinator</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Opens CRM Opportunity</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Clicks "Create Appointment"</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Booking engine opens</div><div class="node-sub">Pre-loaded with customer data</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Paid appointment?</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label amber">Payment Path</div>
+        <div class="lane-content" style="flex-direction:column;gap:8px;align-items:flex-start">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-amber">YES — Paid Appt</span>
+            <div class="node-box amber" style="max-width:none;display:inline-block">System generates unique payment link (PayTabs)</div>
+            <span class="arr">→</span>
+            <div class="node-box amber" style="max-width:none;display:inline-block">Sent to customer via WhatsApp/Email</div>
+            <span class="arr">→</span>
+            <div class="node-box amber" style="max-width:none;display:inline-block">Slot held 48 hrs</div>
+            <span class="arr">→</span>
+            <div class="node-box green" style="max-width:none;display:inline-block">Payment received webhook → Status: Paid</div>
+            <span class="arr">→</span>
+            <div class="node-box green" style="max-width:none;display:inline-block">Book Appointment unlocked</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-green">NO — No Payment Required</span>
+            <div class="node-box green" style="max-width:none;display:inline-block">Proceed directly to slot selection</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-red">48hr Timeout</span>
+            <div class="node-box gray" style="max-width:none;display:inline-block">Slot released (NOT auto-cancelled)</div>
+            <span class="arr">→</span>
+            <div class="node-box amber" style="max-width:none;display:inline-block">Follow-up reminder raised</div>
+            <span class="arr">→</span>
+            <div class="node-box blue" style="max-width:none;display:inline-block">Overlap permitted to retain opportunity</div>
+          </div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label blue">Coordinator / Manager</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Select fitting room</div><div class="node-sub">Standard / VIP</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Select consultant</div><div class="node-sub">From available roster</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Check overlap</div><div class="node-sub">1 overlap allowed w/ manager override</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Confirm slot + duration</div><div class="node-sub">Default duration by appt type</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Appointment created</div><div class="node-sub">Status: Scheduled</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">Notifications</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Booking confirmation sent</div><div class="node-sub">WhatsApp + Email</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Day-before reminder (11 AM)</div><div class="node-sub">With confirm option</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Human confirmation call</div><div class="node-sub">24hrs before appt</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Appointment Status Lifecycle</h2>
+  <div class="card" style="margin-bottom:24px">
+    <div class="status-flow">
+      <div class="status s0">Scheduled</div><span class="arr-sm">→</span>
+      <div class="status s1">Pending Payment</div><span class="arr-sm">→</span>
+      <div class="status s2">Paid <span style="font-size:10px">(auto)</span></div><span class="arr-sm">→</span>
+      <div class="status s6">Confirmed <span style="font-size:10px">(manual, 24h before)</span></div><span class="arr-sm">→</span>
+      <div class="status s5">Checked In</div><span class="arr-sm">→</span>
+      <div class="status s3">Completed</div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap">
+      <div class="status s4">No Show</div>
+      <div class="status s1">Rescheduled</div>
+      <div class="status s4">Cancelled + Reason</div>
+      <div class="status s4">Did Not Try</div>
+      <div class="status s0">Found Dress Elsewhere + Source</div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">Staff can cancel (with reason, kept in cancellation report) but CANNOT delete. For fitting appts (Try Fixed, Try and Take): Confirmed only possible after consultant marks dress Ready (post-tailor + QC).</p>
+  </div>
+
+  <h2 class="sec">Calendar Block — Required Content</h2>
+  <div class="card-sm">
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <span class="badge badge-blue">Customer Name</span>
+      <span class="badge badge-blue">Phone Number</span>
+      <span class="badge badge-blue">Email</span>
+      <span class="badge badge-amber">Wedding Date (read-only)</span>
+      <span class="badge badge-teal">Fitting Room</span>
+      <span class="badge badge-teal">Consultant</span>
+      <span class="badge badge-purple">Appointment Type</span>
+      <span class="badge badge-gray">Visit Number</span>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:8px">Colour-coded by type: Try and Fix = yellow · Try Fixed = orange · Try and Take = blue · Checked In = distinct colour.</p>
+  </div>
+
+  <h2 class="sec">Consultant Scheduling Rules</h2>
+  <div class="grid-2">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Many-to-Many: Consultants ↔ Stores</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot blue">1</div><div class="vflow-body"><h4>Scheduling by hours, not slots</h4><p>Appointment type sets default duration. Manager can shorten for a specific case.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">2</div><div class="vflow-body"><h4>Cross-store busy blocking</h4><p>Person booked at Store A is shown busy AND blocked at Store B for that time. Cannot be double-booked.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot amber">3</div><div class="vflow-body"><h4>Overlap = Manager Override Only</h4><p>1 overlap allowed on fitting room AND consultant. Manual decision — system does not auto-approve. Override logged in audit trail.</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Duty Roster</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot teal">1</div><div class="vflow-body"><h4>Excel-style entry + import</h4><p>Validity period: weekly or monthly. Can copy prior week.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot teal">2</div><div class="vflow-body"><h4>Blocking states</h4><p>Off-shift · Break (with time) · Leave (annual/sick + reason) — all grey out and block bookings.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot teal">3</div><div class="vflow-body"><h4>Only Store Manager can edit roster</h4><p>For that store only. Attendance enforcement out of scope. Feeds monthly hours/days report.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 5: BRIDAL JOURNEY -->
+<div class="page" id="page-bridal">
+  <div class="page-header">
+    <h1>Bridal Customer Journey & Consultation</h1>
+    <p>End-to-end journey from first visit questionnaire through alteration cycles to final delivery. Includes evening dress handling, walk-in management, and questionnaire cross-store sharing.</p>
+  </div>
+
+  <div class="sec-label">Appointment Type Sequence</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="status-flow" style="flex-wrap:wrap">
+      <div class="status s5">First Visit <span style="font-size:10px">1.5hr</span></div><span class="arr-sm">→</span>
+      <div class="status s5">Second Visit <span style="font-size:10px">1hr</span></div><span class="arr-sm">→</span>
+      <div class="status s1">Try &amp; Fix</div><span class="arr-sm">→</span>
+      <div class="status s6">Try Fixed</div><span class="arr-sm">→</span>
+      <div class="status s6">Try &amp; Take</div><span class="arr-sm">→</span>
+      <div class="status s2">Only Take / Delivery</div>
+    </div>
+    <div style="margin-top:10px;font-size:12px;color:var(--text3)">Flow is NOT hard-coded. Any type can occur in any order. Types can be skipped or combined. Appointment numbers increment; type label changes per visit. "Second Visit" form reused for visits 3+.</div>
+  </div>
+
+  <div class="sec-label">Appointment Type Definitions</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--purple);margin-bottom:4px">Try &amp; Fix</h4><p style="font-size:11px;color:var(--text2)">Measurements taken, QC done for rentals. No alteration work yet. Measurement sheet captured. Creates tailor task in atelier.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px">Try Fixed</h4><p style="font-size:11px;color:var(--text2)">Altered dress tried. Repeats until wedding. Confirmation ONLY after consultant marks dress Ready (post tailor work + QC).</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:4px">Try &amp; Take</h4><p style="font-size:11px;color:var(--text2)">Usually final fitting. Bride tries and takes dress. May repeat if minor work still needed.</p></div>
+    <div class="card-sm"><h4 style="font-size:12px;font-weight:600;color:var(--gray);margin-bottom:4px">Only Take / Dresser / Delivery</h4><p style="font-size:11px;color:var(--text2)">Collection only — no fitting room or consultant needed. Handled as a task/reminder. Driver may collect.</p></div>
+  </div>
+
+  <div class="sec-label">First Visit — Bridal Consultation Questionnaire</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">First Visit (Full Questionnaire)</h3>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="sub-step">Wedding type, style, expectations</div>
+        <div class="sub-step">Budget range</div>
+        <div class="sub-step">Size, colour preferences</div>
+        <div class="sub-step">Selected dresses (links to Noria codes)</div>
+        <div class="sub-step">Tried dresses (code + photo option)</div>
+        <div class="sub-step">Most-liked dress (hearts rating system)</div>
+        <div class="sub-step">Price + deal information</div>
+        <div class="sub-step">Reason for NOT purchasing (if applicable)</div>
+        <div class="sub-step">Next appointment date</div>
+        <div class="sub-step">Staff feedback notes</div>
+        <div class="sub-step">Follow-up reminder date</div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px">Filled by consultant on iPad while bride browses on separate iPad. Same questionnaire used across ALL stores.</p>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Cross-Store History Sharing</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot blue">1</div><div class="vflow-body"><h4>Returning bride detected</h4><p>Pop-up alert when customer already exists in another store/country.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">2</div><div class="vflow-body"><h4>Consultant sees full history</h4><p>Preferences, budget, style, tried dresses, selections from ANY previous store — without re-asking.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">3</div><div class="vflow-body"><h4>No duplicate questionnaire</h4><p>Even if dress was not tried at first store. Same profile carries across countries.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot amber">!</div><div class="vflow-body"><h4>Duplicate detection rule</h4><p>Match on phone OR email. System BLOCKS duplicate creation, shows notification. Consultant calls manager to share existing record.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Walk-In Handling</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">Customer</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Walk-in arrives (no appointment)</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">System</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Bridal? Alert group notified</div><div class="node-sub">Store Mgr · Area Mgr · Supervisor · DOO</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box gray">Evening? No alert</div><div class="node-sub">Recorded for footfall only</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label blue">Floor Coordinator</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Captures name, wedding date, phone</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Creates Lead + Contact (walk-in source)</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label purple">Manager</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box purple">Receives alert, decides accommodation</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Accommodate now?</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Book immediate slot</div><div class="node-sub">Override if needed</div></div>
+          <span style="color:var(--text3);font-size:12px;padding:0 4px">OR</span>
+          <div class="node"><div class="node-box blue">Book for later</div><div class="node-sub">Tracked: booked vs showed</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Atelier & Alteration Flow</h2>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">Consultant</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Try &amp; Fix appointment</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Fills measurement sheet</div><div class="node-sub">Digital form on iPad</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Records complexity</div><div class="node-sub">Major / Medium / Minor</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Alteration form signed</div><div class="node-sub">Tailor + Asst. Consultant + Consultant + Client</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">System</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Tailor task created</div><div class="node-sub">In atelier queue</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Atelier schedule updated</div><div class="node-sub">Production Manager assigns</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label coral">Tailor / Beader</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box coral">Performs alteration work</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">Beading (if required)</div><div class="node-sub">Light / Medium / Heavy</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">Marks work DONE</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">System</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Alert → Asst. Consultant</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Alert → Consultant</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label blue">Consultant + Asst.</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Quality control check</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Mark dress READY</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Appointment status → Confirmable</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box purple">Manager confirms appointment</div><div class="node-sub">24hr before</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="gap-flag" style="margin-top:16px"><span class="gap-icon">⚠</span><span>Measurement form and alteration form language: English + Arabic. KSA forms in Arabic. Form templates to be provided by ESPOSA team (not yet received).</span></div>
+</div>
+
+<!-- PAGE 6: CUSTOM-MADE FLOW -->
+<div class="page" id="page-custommade">
+  <div class="page-header">
+    <h1>Custom-Made Couture Flow (Kristie Romanos & Plume)</h1>
+    <p>Parallel flow within the same booking application. Same fitting rooms and stores. Distinct appointment types, forms, and contract lifecycle.</p>
+  </div>
+
+  <div class="sec-label">Custom-Made Appointment Sequence</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="status-flow" style="flex-wrap:wrap">
+      <div class="status s5">First Visit</div><span class="arr-sm">→</span>
+      <div class="status s6">Sketches &amp; Samples</div><span class="arr-sm">→</span>
+      <div class="status s6">Calico Fitting</div><span class="arr-sm">→</span>
+      <div class="status s1">First Prova</div><span class="arr-sm">→</span>
+      <div class="status s1">Second Prova</div><span class="arr-sm">→</span>
+      <div class="status s1">Third Prova</div><span class="arr-sm">→</span>
+      <div class="status s3">Take</div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">Prova = fitting/trial in French/Italian fashion terminology. Sequence is flexible — stages can repeat and be combined for urgent dresses.</p>
+  </div>
+
+  <div class="sec-label">Custom-Made Payment Schedule</div>
+  <div class="vflow" style="margin-bottom:24px">
+    <div class="vflow-item"><div class="vflow-dot amber">1</div><div class="vflow-body"><h4>Sketch Fee (before sketch work begins)</h4><p>Fixed fee. Sales order raised to Noria. Charged once regardless of iterations. Deductible from final dress price.</p></div></div>
+    <div class="vflow-item"><div class="vflow-dot amber">2</div><div class="vflow-body"><h4>50% of Deal (at Sketches &amp; Samples agreement)</h4><p>When bride approves the sketch and sample concept.</p></div></div>
+    <div class="vflow-item"><div class="vflow-dot amber">3</div><div class="vflow-body"><h4>Balance — completed at Calico Fitting</h4><p>Before real fabric is cut. Full payment required to proceed to First Prova.</p></div></div>
+    <div class="vflow-item"><div class="vflow-dot green">✓</div><div class="vflow-body"><h4>Sketch fee converted at confirmation</h4><p>Original sketch-fee sales order reversed. New sales order for full dress amount, with sketch fee deducted.</p></div></div>
+  </div>
+
+  <div class="sec-label">Custom-Made Forms & Documents</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Digital Forms (on iPad)</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Custom-Made Questionnaire</h4><p>Style, preferences, colour, wedding theme. Filled by stylist on iPad. Stored in CRM.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Measurement Sheet</h4><p>Full body measurements as digital form. Values in fields placed on body image. Linked to opportunity. Previous measurements retained; new ones on next opportunity. Exported as PDF for atelier.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Modification Sheet</h4><p>Changes at each fitting (shorten/tighten by X). Filled at EVERY fitting. Consultant CANNOT leave without either recording "no modification" or attaching a filled sheet.</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Hand-Drawn Sketch & Sample</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Sketch stays manual</h4><p>Photo of hand-drawn sketch saved to profile. Not digitised. AI-generated dress image is parked for future phase.</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Sample = physical piece</h4><p>Captured as a photograph in CRM. Beading team prepares sample in ~10 days.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Readiness check before appointment</h4><p>At Sketches &amp; Samples stage: appointment postponed if sketch/sample not ready. System checks before confirming.</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Custom-Made Contract Flow</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label teal">System</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Contract generated from template</div><div class="node-sub">Pre-filled from CRM customer data</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Contains: deal details, fabric, amount, fitting timeline, remarks</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label amber">Decision</div>
+        <div class="lane-content" style="flex-direction:column;gap:8px;align-items:flex-start">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-amber">Electronic Signature</span>
+            <span style="font-size:12px;color:var(--text2)">→ Sketch + Sample + Measurement + Contract combined into single PDF → Customer signs electronically → Completion certificate generated</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span class="badge badge-gray">Print, Sign &amp; Upload (Default)</span>
+            <span style="font-size:12px;color:var(--text2)">→ Pre-filled PDF printed → Signed on paper → Scanned → Uploaded to CRM profile → Status: Signed</span>
+          </div>
+          <div class="gap-flag" style="margin:0"><span class="gap-icon">⚠</span><span>Legal advice required to confirm signature method. iPad signature (without device trace + completion cert) is NOT legally accepted. Final method subject to legal confirmation by Elie Harb.</span></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">Pending Signature Reminder</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box amber">Unsigned contract label set</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Reminder triggered (similar to pending payment)</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Contract signed → Label cleared</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label coral">Amendment Rules</div>
+        <div class="lane-content" style="flex-direction:column;gap:8px;align-items:flex-start">
+          <div style="display:flex;gap:8px"><span class="badge badge-red">Price changes</span><span style="font-size:12px;color:var(--text2)">→ New contract issued. Signed document cannot be amended.</span></div>
+          <div style="display:flex;gap:8px"><span class="badge badge-amber">Sketch/sample revision (price unchanged)</span><span style="font-size:12px;color:var(--text2)">→ Fresh signature on revised sketch/sample only.</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 7: RENTAL LIFECYCLE -->
+<div class="page" id="page-rental">
+  <div class="page-header">
+    <h1>Rental Lifecycle — Inventory, Deposits, Returns & Laundry</h1>
+    <p>Complete rental flow covering pricing model, availability blocking, guarantee deposit, return inspection, damage handling, and cleaning cycle.</p>
+  </div>
+
+  <div class="sec-label">Rental Pricing Model</div>
+  <div class="grid-3" style="margin-bottom:24px">
+    <div class="card-sm card-teal"><h4 style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:4px">Sale Price</h4><p style="font-size:11px;color:var(--text2)">Available on all dresses. No upper cap (can sell above list). Below list requires discount matrix approval.</p></div>
+    <div class="card-sm card-amber"><h4 style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px">First Rent Price</h4><p style="font-size:11px;color:var(--text2)">First wear of a new dress. Higher than regular rent. Applies to ready-to-wear and Plume by Kristie. NOT for Kristie Romanos.</p></div>
+    <div class="card-sm card-accent"><h4 style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:4px">Regular Rent Price</h4><p style="font-size:11px;color:var(--text2)">Same price every subsequent rental. Repeat-rental discount at store discretion only (not systematic).</p></div>
+  </div>
+
+  <div class="sec-label">Rental Appointment Schedule (Working Back from Wedding)</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="status-flow">
+      <div class="status s5">~20 days before ▸ Try &amp; Fix</div><span class="arr-sm">→</span>
+      <div class="status s6">~10 days before ▸ Try Fixed</div><span class="arr-sm">→</span>
+      <div class="status s2">~2 days before ▸ Try &amp; Take</div><span class="arr-sm">→</span>
+      <div class="status s1">Wedding Day</div><span class="arr-sm">→</span>
+      <div class="status s3">~1 day after ▸ Return</div>
+    </div>
+    <p style="font-size:12px;color:var(--text3);margin-top:10px">Reorder must arrive physically at least ~1 month before wedding. Travelling bride exception: invoice can be closed while Try &amp; Fix is still pending.</p>
+    <div style="margin-top:8px;font-size:12px;color:var(--text2)"><strong>Payment rule:</strong> Full payment required before dress goes to tailor. A Try &amp; Fix CAN happen while unpaid (dress tried only), but alteration DOES NOT proceed until fully paid. Fully Paid tag placed at tailor hand-off.</div>
+  </div>
+
+  <div class="sec-label">Rental Availability Blocking Rules</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Inside Country</h3>
+      <div class="status-flow" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s1">2 days before wedding</div><span style="font-size:11px;color:var(--text2)">Block begins — dress available for collection</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s4">+5 days after</div><span style="font-size:11px;color:var(--text2)">High alert window</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s1">+15 more days</div><span style="font-size:11px;color:var(--text2)">Medium alert window (~20 day total cycle)</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Outside Country (Shipping)</h3>
+      <div class="status-flow" style="flex-direction:column;align-items:flex-start;gap:6px">
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s1">2 days before wedding</div><span style="font-size:11px;color:var(--text2)">Block begins</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s4">+5 days after</div><span style="font-size:11px;color:var(--text2)">High alert window</span></div>
+        <div style="display:flex;align-items:center;gap:8px"><div class="status s1">+25 more days</div><span style="font-size:11px;color:var(--text2)">Medium alert window (~30 day total cycle — longer for shipping/return)</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="card-sm" style="margin-bottom:24px;border-color:var(--purple-mid);background:var(--purple-light)">
+    <p style="font-size:12px;color:var(--purple)"><strong>Same-Dress Conflict:</strong> Noria detects and pushes conflict record into CRM (via API or custom module), OR Noria report embedded in CRM. CRM does NOT build native availability engine. Noria remains single source of truth. Manager override allowed to book within blocked window.</p>
+  </div>
+
+  <div class="sec-label">Guarantee Deposit Flow</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">Consultant</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Rental confirmed</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Guarantee amount recorded on sales invoice</div><div class="node-sub">Fixed amount per item/country (TBC)</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box blue">Guarantee form generated + signed by client</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label amber">ERP (Noria)</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box amber">CRM instructs Noria to collect guarantee</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Noria processes receipt voucher</div><div class="node-sub">Treated as deposit, NOT revenue</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">Return (≈1 day post-wedding)</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">Dress returned to store</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Inspection + QC form filled</div><div class="node-sub">Consultant + Asst. Consultant</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">Damage found?</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label coral">Damage Path</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box coral">Manager assesses damage</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">CRM creates damage sales order → Noria</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">Receipt voucher + immediate invoice</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">Deducted from guarantee</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box coral">Client receives damage invoice</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label green">Close Window (Noria)</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box green">Guarantee return confirmed</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Client signs receipt</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Rental invoice CLOSED</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Items return to stock</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">Sent to laundry</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Laundry Cycle</h2>
+  <div class="card" style="margin-bottom:16px">
+    <p style="font-size:12px;color:var(--text2);margin-bottom:10px">Each laundry job needs: Client name + dress code · Receiving date · Sent date · Expected return date · Urgency flag. Reports: Laundry-In and Laundry-Out sortable by due-date priority. Typical turnaround: 2–3 days.</p>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>OPEN:</strong> Laundry tracking approach not resolved. Option A: Noria warehouse location transfer (tried before, found slow). Option B: CRM tracking form + reminders (doesn't reflect true inventory movement). ESPOSA to re-engineer laundry process internally and revert. Today, item shows back in stock after guarantee return even if physically still in laundry.</span></div>
+  </div>
+  <div class="gap-flag"><span class="gap-icon">⚠</span><span><strong>Auditor confirmation needed:</strong> UAE &amp; KSA e-invoicing rules may require an ERP financial entry for the guarantee deposit, rather than holding it only on a signed form. ESPOSA to confirm with auditor.</span></div>
+</div>
+
+<!-- PAGE 8: PAYMENTS & ERP -->
+<div class="page" id="page-payments">
+  <div class="page-header">
+    <h1>Payments, Sales Orders & ERP Integration</h1>
+    <p>Complete payment flow, CRM ↔ Noria ERP data exchange, country-specific invoicing rules, and the inventory model.</p>
+  </div>
+
+  <div class="sec-label">Payment Integration (PayTabs — Leading Candidate)</div>
+  <div class="scroll-note">↔ Scroll to see full flow</div>
+  <div class="flow-wrap">
+    <div class="swimlane">
+      <div class="swimlane-row">
+        <div class="lane-label blue">CRM User</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box blue">Clicks "Send Payment Link" on Opportunity</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">CRM pushes: customer name + amount + country to PayTabs</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">PayTabs generates unique link</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box teal">CRM sends link via WhatsApp or Email</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label amber">Customer</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box amber">Pays via link</div></div>
+        </div>
+      </div>
+      <div class="swimlane-row">
+        <div class="lane-label teal">System (Webhook)</div>
+        <div class="lane-content">
+          <div class="node"><div class="node-box teal">PayTabs webhook → CRM</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Opportunity status → Payment Received</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box green">Book Appointment action unlocked</div></div>
+          <span class="arr">→</span>
+          <div class="node"><div class="node-box amber">CRM triggers Noria: receipt voucher + invoice (country-specific)</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2 class="sec">Country-Specific Invoicing Rules</h2>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Country</th><th>On Payment Received</th><th>Final Invoice</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td>🇦🇪 UAE</td><td>Invoice + Receipt Voucher</td><td>At delivery (day of)</td><td>E-invoicing rules in effect from Oct 2026. No pro forma invoices.</td></tr>
+      <tr><td>🇸🇦 KSA</td><td>Invoice + Receipt Voucher</td><td>At delivery (day of)</td><td>Connected to ASP provider. E-invoicing compliant.</td></tr>
+      <tr><td>🇱🇧 Lebanon</td><td>Receipt Voucher ONLY</td><td>At delivery (adjusted against receipt voucher)</td><td>Invoice raised at delivery only, net of advance.</td></tr>
+      <tr><td>🇶🇦 Qatar</td><td>TBC</td><td>TBC</td><td>Legal entity and invoicing rules pending Qatar setup.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Sales Order Architecture</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Line Item Types</h3>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="sub-step blue">Base price (dress)</div>
+        <div class="sub-step">Modification charge</div>
+        <div class="sub-step">Rush order fee</div>
+        <div class="sub-step">Alteration</div>
+        <div class="sub-step">Re-alteration</div>
+        <div class="sub-step">Services (dresser, image consultant)</div>
+        <div class="sub-step">Advance / Second Advance</div>
+        <div class="sub-step amber">Sketch fee (custom-made)</div>
+        <div class="sub-step red">Damage charge</div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px">Service item codes come from Noria and must be importable. CRM never creates item codes — only selects and charges.</p>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Discount & Approval Rules</h3>
+      <div class="vflow">
+        <div class="vflow-item"><div class="vflow-dot amber">1</div><div class="vflow-body"><h4>Selling above list price</h4><p>Allowed. No upper cap.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot coral">2</div><div class="vflow-body"><h4>Selling below list price</h4><p>ONLY via discount matrix. Recorded as % discount, NOT a manually typed lower price.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot purple">3</div><div class="vflow-body"><h4>Discount Matrix</h4><p>Held in CRM (ERP doesn't know best-sellers). Varies by user role · country · collection. Excludes best-sellers. No automatic discounting by stock age.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot purple">4</div><div class="vflow-body"><h4>Approval workflow</h4><p>Discount request → notification → manager approval. All tracked.</p></div></div>
+        <div class="vflow-item"><div class="vflow-dot blue">5</div><div class="vflow-body"><h4>Order confirmation</h4><p>Manager approval on total. Free item (e.g. veil with sale) requires manager approval. Free accessory on rental = zero value (returned).</p></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Inventory Model — Parent / Child Codes</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="grid-2">
+      <div>
+        <h3 class="sub" style="margin-top:0">Code Structure</h3>
+        <div class="vflow">
+          <div class="vflow-item"><div class="vflow-dot teal">P</div><div class="vflow-body"><h4>Parent Code</h4><p>Represents a dress design/SKU. Holds parent-level images. Imported from Noria.</p></div></div>
+          <div class="vflow-item"><div class="vflow-dot amber">C</div><div class="vflow-body"><h4>Child Code (unique per physical piece)</h4><p>Two identical dresses = two different child codes. Pictures at child level. Generated in Noria on printing.</p></div></div>
+        </div>
+        <p style="font-size:11px;color:var(--text3);margin-top:8px">CRM imports: parent code · child code · pictures · 3 price levels · service item codes. NEVER creates codes.</p>
+      </div>
+      <div>
+        <h3 class="sub" style="margin-top:0">Zero-Stock Orders</h3>
+        <div class="vflow">
+          <div class="vflow-item"><div class="vflow-dot coral">1</div><div class="vflow-body"><h4>CRM can raise zero-stock sales order</h4><p>Reorder + procurement happens in Noria. Parent code selected, size/colour from matrix.</p></div></div>
+          <div class="vflow-item"><div class="vflow-dot coral">2</div><div class="vflow-body"><h4>Child code generated on printing in Noria</h4><p>Noria holds item at zero (never negative). Invoice created only when piece physically received.</p></div></div>
+          <div class="vflow-item"><div class="vflow-dot coral">3</div><div class="vflow-body"><h4>Reorder sheet → management approval → purchasing</h4><p>Then forwarded to supplier.</p></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 9: INTEGRATIONS -->
+<div class="page" id="page-integrations">
+  <div class="page-header">
+    <h1>System Integration Architecture</h1>
+    <p>All external and internal system touchpoints, data flows, APIs, and integration dependencies.</p>
+  </div>
+
+  <div class="sec-label">CRM ↔ Noria ERP — Data Flows</div>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Direction</th><th>Trigger</th><th>Data Sent</th><th>Notes</th></tr></thead>
+    <tbody>
+      <tr><td><span class="badge badge-blue">CRM → Noria</span></td><td>Lead converted to Account</td><td>Customer profile (name, phone, email, country)</td><td>Customer creation in Noria. Exact trigger to be defined.</td></tr>
+      <tr><td><span class="badge badge-blue">CRM → Noria</span></td><td>Payment received</td><td>Receipt voucher instruction + invoice (country-specific)</td><td>UAE/KSA: invoice + receipt. Lebanon: receipt only.</td></tr>
+      <tr><td><span class="badge badge-blue">CRM → Noria</span></td><td>Sales order created</td><td>Line items, amounts, currency, rental blocking dates</td><td>CRM is single point of entry for sales orders.</td></tr>
+      <tr><td><span class="badge badge-blue">CRM → Noria</span></td><td>Sales order cancelled</td><td>Cancel instruction → Noria reverses → New SO created</td><td>Same reverse-and-new mechanics for changes.</td></tr>
+      <tr><td><span class="badge badge-blue">CRM → Noria</span></td><td>Damage on return</td><td>Damage sales order + receipt voucher + invoice</td><td>Immediate invoice for damage.</td></tr>
+      <tr><td><span class="badge badge-teal">Noria → CRM</span></td><td>Batch sync (≤1hr target)</td><td>Item master: parent code, child code, images, 3 prices, availability</td><td>Noria availability report is slow — batch preferred over live lookup.</td></tr>
+      <tr><td><span class="badge badge-teal">Noria → CRM</span></td><td>Payment status update</td><td>Paid / Partially Paid / Fully Paid per opportunity</td><td>For executive view in CRM. Via webhook or push.</td></tr>
+      <tr><td><span class="badge badge-teal">Noria → CRM</span></td><td>Same-dress conflict detected</td><td>Conflict record pushed via API or embedded report</td><td>Noria detects; CRM displays. Conflict detection stays in Noria.</td></tr>
+      <tr><td><span class="badge badge-teal">Noria → CRM</span></td><td>Dress status sync</td><td>Available · Reserved · Rented Out · Cleaning · Alteration</td><td>Real-time status from Noria via direct API.</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Website (Shopify) ↔ CRM</div>
+  <div class="int-grid" style="margin-bottom:24px">
+    <div class="int-card"><h4>Lead Form Embed</h4><div class="direction">Shopify → CRM</div><div class="desc">Zoho SalesIQ embed code on Shopify pages. Customer-facing form unchanged. Appointment type passed silently from Book Now button.</div></div>
+    <div class="int-card"><h4>Wish List Sync</h4><div class="direction">Shopify → CRM</div><div class="desc">Customer dress selections on website linked to CRM contact profile. Unique identifier: email address. Technical approach to be solutioned.</div></div>
+    <div class="int-card"><h4>Inventory Display</h4><div class="direction">Noria → Shopify</div><div class="desc">Dress availability also linked to website (direct Noria connection). Out of CRM scope.</div></div>
+    <div class="int-card"><h4>Chatbot</h4><div class="direction">SalesIQ on Shopify</div><div class="desc">Knowledge-base driven, NOT AI. Handles FAQs. WhatsApp click-through goes to live WhatsApp number.</div></div>
+  </div>
+
+  <div class="sec-label">WhatsApp Integration</div>
+  <div class="card" style="margin-bottom:24px">
+    <div class="grid-2">
+      <div>
+        <h3 class="sub" style="margin-top:0">Architecture Decision</h3>
+        <div class="vflow">
+          <div class="vflow-item"><div class="vflow-dot blue">1</div><div class="vflow-body"><h4>Single central WA Business number (TBC)</h4><p>Multi-user access. Each user signs into their own profile. Customer sees one number.</p></div></div>
+          <div class="vflow-item"><div class="vflow-dot blue">2</div><div class="vflow-body"><h4>Country/store routing at agent layer</h4><p>Not by separate numbers per store. Coordinator routes after receiving.</p></div></div>
+          <div class="vflow-item"><div class="vflow-dot amber">3</div><div class="vflow-body"><h4>Human-led, not AI-led</h4><p>No chatbot session handoff. Direct human interaction with customer.</p></div></div>
+        </div>
+      </div>
+      <div>
+        <h3 class="sub" style="margin-top:0">Outbound Customer Comms via WhatsApp</h3>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="sub-step blue">Booking confirmation (with payment link if applicable)</div>
+          <div class="sub-step">Day-before appointment reminder (11 AM fixed time)</div>
+          <div class="sub-step">Try &amp; Fix reminder (bring shoes, guarantee amount)</div>
+          <div class="sub-step teal">Post-visit feedback survey (5-point smiley rating)</div>
+          <div class="sub-step green">Payment link for appointment fee</div>
+          <div class="sub-step amber">Payment follow-up (if 48hr timeout)</div>
+          <div class="sub-step">Wedding day congratulations</div>
+          <div class="sub-step">Week-after follow-up</div>
+        </div>
+        <div class="gap-flag" style="margin-top:8px"><span class="gap-icon">⚠</span><span>SMS regulatory constraints in KSA, UAE, Lebanon must be addressed in dedicated marketing workshop.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Top Integration Risk</div>
+  <div class="open-item"><span class="gap-icon">!</span><span><strong>CRITICAL RISK:</strong> Noria ERP integration depends on Noria APIs being ready. Building/testing a new API can take 1–2 weeks each on the Noria side. Technical integration session planned ~2 months after design freeze. Integration done AFTER design is frozen to avoid rework.</span></div>
+</div>
+
+<!-- PAGE 10: ROLES & PERMISSIONS -->
+<div class="page" id="page-roles">
+  <div class="page-header">
+    <h1>Roles, Permissions & Access Control</h1>
+    <p>Role hierarchy, access scope, booking permissions, and audit trail requirements across the single Zoho CRM organisation.</p>
+  </div>
+
+  <div class="sec-label">Role Hierarchy</div>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Role</th><th>Access Scope</th><th>Booking Permissions</th><th>Device</th></tr></thead>
+    <tbody>
+      <tr><td>Admin (Owner)</td><td>Full — all countries, stores, data</td><td>All booking actions + override</td><td>All</td></tr>
+      <tr><td>CEO / Top Management</td><td>Full view + reporting all countries</td><td>Bookable as a resource</td><td>All</td></tr>
+      <tr><td>Area Manager</td><td>Multiple stores, multiple countries</td><td>Can book across assigned stores</td><td>All</td></tr>
+      <tr><td>Store Manager</td><td>Own store only + read other store calendars</td><td>Can book, can authorise overlaps</td><td>Desk + iPad</td></tr>
+      <tr><td>Floor Coordinator / Supervisor</td><td>Own store + cross-store for calls/bookings</td><td>Can create bookings; cannot delete</td><td>Desk + iPad</td></tr>
+      <tr><td>Consultant</td><td>Own store + view other consultants' calendars in same store</td><td>Can book; OWN store only</td><td>iPad (own schedule) + Desk</td></tr>
+      <tr><td>Asst. Consultant</td><td>Own store — as resource/assignee</td><td>Tracked as resource; may not be direct CRM user</td><td>iPad (limited)</td></tr>
+      <tr><td>Tailor / Beader</td><td>Atelier schedule only (via Atelier Manager)</td><td>No direct booking; Atelier Mgr assigns</td><td>None (forms filled by consultant)</td></tr>
+      <tr><td>Atelier / Production Manager</td><td>All atelier tasks across stores</td><td>Manages tailor/beader schedule</td><td>Desk</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Critical Access Rules</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Booking Restrictions</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">✓</div><div class="step-body"><h4>Consultant → own store only</h4><p>Cannot book into another store.</p></div></div>
+        <div class="step"><div class="step-num">✓</div><div class="step-body"><h4>Cross-store booking = Store Manager or Admin only</h4><p>Configurable permission that can be granted or withdrawn.</p></div></div>
+        <div class="step"><div class="step-num">✓</div><div class="step-body"><h4>Overlap override = Manager only</h4><p>Manual decision. System does not auto-approve. Manager opens calendar and decides. Logged in audit.</p></div></div>
+        <div class="step"><div class="step-num">✓</div><div class="step-body"><h4>Staff CANNOT delete records</h4><p>Can cancel with reason (kept in report). Delete never available.</p></div></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Audit & Traceability</h3>
+      <div class="steps">
+        <div class="step"><div class="step-num">1</div><div class="step-body"><h4>Each serving staff = individual CRM user</h4><p>No shared logins. Concurrent sessions supported (tablet + CRM simultaneously).</p></div></div>
+        <div class="step"><div class="step-num">2</div><div class="step-body"><h4>Audit trail on all changes</h4><p>Overlap overrides · Refundable/non-refundable changes · Cancellations · Discount approvals · All actions attributed to a named user.</p></div></div>
+        <div class="step"><div class="step-num">3</div><div class="step-body"><h4>Disabled ≠ Deleted</h4><p>When employee leaves: account disabled, not removed. All historical activity retained.</p></div></div>
+        <div class="step"><div class="step-num">4</div><div class="step-body"><h4>Wedding date read-only for staff</h4><p>Only visible — not editable on calendar block by consultant/coordinator.</p></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 11: EXCEPTIONS & ESCALATIONS -->
+<div class="page" id="page-exceptions">
+  <div class="page-header">
+    <h1>Exception Handling, Escalations & Notifications</h1>
+    <p>All failure paths, escalation triggers, automated and manual notification flows, and survey framework.</p>
+  </div>
+
+  <div class="sec-label">Escalation Triggers</div>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Trigger Condition</th><th>Escalation Action</th><th>Recipients</th></tr></thead>
+    <tbody>
+      <tr><td>Bridal walk-in arrives with no appointment</td><td>Immediate WhatsApp/pop-up alert</td><td>Store Manager · Area Manager · Supervisor · Director of Operations</td></tr>
+      <tr><td>Opportunity stuck in a stage too long</td><td>Escalation alert (thresholds per product type × wedding date proximity)</td><td>Per escalation matrix (to be provided by ESPOSA)</td></tr>
+      <tr><td>Customer has 2+ Try &amp; Fix appointments</td><td>Repeat-fitting flag + alert</td><td>Store Manager (signals tailoring, expectation, or consultant issue)</td></tr>
+      <tr><td>Payment not received within 48hrs</td><td>Follow-up reminder + slot released (not cancelled)</td><td>Assigned coordinator</td></tr>
+      <tr><td>Dress not marked Ready before fitting appt</td><td>Appointment cannot be confirmed</td><td>Consultant + Asst. Consultant notified to complete QC</td></tr>
+      <tr><td>Contract not signed before Calico Fitting</td><td>Pending document signature label + reminder</td><td>Consultant + Manager</td></tr>
+      <tr><td>Outstanding payment due date</td><td>CRM notification on due date</td><td>Assigned consultant (from embedded Noria cash flow report)</td></tr>
+      <tr><td>Customer not re-booked within 2 weeks of walk-in</td><td>Follow-up reminder</td><td>Assigned consultant (configurable window)</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Automated Notification Framework</div>
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Customer-Facing (Outbound)</h3>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="sub-step green">Booking confirmation (+ payment link if fee)</div>
+        <div class="sub-step blue">Day-before appointment reminder (11 AM, every appt)</div>
+        <div class="sub-step amber">Try &amp; Fix reminder (bring shoes / guarantee amount)</div>
+        <div class="sub-step teal">Post-visit survey (every visit type)</div>
+        <div class="sub-step green">Thank-you when bride says YES to dress</div>
+        <div class="sub-step green">Congratulations on wedding day</div>
+        <div class="sub-step blue">Follow-up 1 week after wedding</div>
+        <div class="sub-step red">Pending payment follow-up</div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px">Configurable by appointment type × store × brand. Generic messages + variables (store, date, location) + store-specific overrides. ~100 templates to be supplied by ESPOSA.</p>
+    </div>
+    <div class="card">
+      <h3 class="sub" style="margin-top:0">Employee-Facing (Internal)</h3>
+      <div style="display:flex;flex-direction:column;gap:4px">
+        <div class="sub-step blue">New lead assigned notification (mobile app + email)</div>
+        <div class="sub-step blue">Walk-in bridal alert (defined group)</div>
+        <div class="sub-step amber">Consultant follow-up reminder (configurable working back from wedding date: ~40, 30, 20 days)</div>
+        <div class="sub-step teal">Dress ready for QC (tailor → asst. consultant + consultant)</div>
+        <div class="sub-step teal">1 week before Try &amp; Fix: confirm dress available + good condition</div>
+        <div class="sub-step amber">Payment pop-up triggered by appointment type</div>
+        <div class="sub-step amber">Outstanding receivable due-date alert</div>
+        <div class="sub-step purple">Overlap override alert to manager</div>
+      </div>
+      <p style="font-size:11px;color:var(--text3);margin-top:8px"><strong>NO automatic reminder</strong> sent for tailor-dependent trials (Try Fixed, Try and Take) — confirmed only after dress marked Ready.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Daily Operations Brief (Automated Email per Store)</div>
+  <div class="card-sm" style="margin-bottom:24px">
+    <p style="font-size:12px;color:var(--text2)">Scheduled daily email to each store. Contents: <strong>Next-day bookings</strong> + <strong>Previous-day attendance ratio</strong> (first visits booked vs showed / rescheduled / lost, cancellation breakdown). Separate from in-app calendar — a management report for floor headcount planning.</p>
+  </div>
+
+  <div class="sec-label">Feedback Survey Framework</div>
+  <div class="card-sm" style="margin-bottom:24px">
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+      <div><span class="badge badge-teal">5-point smiley rating</span></div>
+      <div><span class="badge badge-gray">Optional comment field</span></div>
+      <div><span class="badge badge-red">Negative answer → Comment required + Internal alert</span></div>
+      <div><span class="badge badge-amber">~100 templates by store/brand/type</span></div>
+      <div><span class="badge badge-purple">Arabic versions needed per country</span></div>
+    </div>
+    <p style="font-size:12px;color:var(--text2);margin-top:8px">Goal: capture complaints internally before they reach public review platforms. Sent after EVERY visit type including delivery.</p>
+  </div>
+</div>
+
+<!-- PAGE 12: GAPS & ASSUMPTIONS -->
+<div class="page" id="page-gaps">
+  <div class="page-header">
+    <h1>Open Items, Gaps & Assumptions</h1>
+    <p>All unresolved items, pending confirmations, parked decisions, and documented assumptions that require clarification before build.</p>
+  </div>
+
+  <div class="sec-label">Critical Open Items (Blocking)</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Noria API Readiness</strong> — Top project risk. Each new API takes 1–2 weeks to build on Noria side. Technical session planned ~2 months out. Integration AFTER design freeze.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Payment Service Provider</strong> — PayTabs is leading candidate but final selection per country and integration specification (required fields, currencies, webhook contract) not yet confirmed. Owner: Nicole / George.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>WhatsApp Business number consolidation</strong> — Central number not yet set up. Provider TBD. Meta verification process pending. Essential before WhatsApp integration can be built.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Legal position on custom-made contract signature</strong> — Electronic vs print-sign-upload. Legal advice required from Elie Harb. This determines whether e-signature infrastructure is needed.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Guarantee deposit accounting</strong> — Auditor must confirm whether UAE/KSA e-invoicing rules allow holding guarantee on signed form only (without ERP financial entry). Determines if CRM needs ledger selection screen.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Qatar legal entity name</strong> — Required for CRM structure and permissions. Owner: Elie Harb.</span></div>
+    <div class="open-item"><span class="gap-icon">!</span><span><strong>Laundry process approach</strong> — Not resolved (Noria warehouse location vs CRM tracking form). ESPOSA must re-engineer process internally before system design can proceed.</span></div>
+  </div>
+
+  <div class="sec-label">Pending Inputs from ESPOSA Team</div>
+  <table class="field-table" style="margin-bottom:24px">
+    <thead><tr><th>Input Required</th><th>Owner</th><th>Impact if Missing</th></tr></thead>
+    <tbody>
+      <tr><td>Bridal consultation questionnaire (first + second visit)</td><td>Nicole</td><td>Cannot design consultation form screens</td></tr>
+      <tr><td>Fitting &amp; alteration measurement form (EN + AR)</td><td>Nicole</td><td>Cannot design atelier workflow</td></tr>
+      <tr><td>Kristie Romanos custom-measurement form (EN + AR)</td><td>Nicole</td><td>Cannot design custom-made form flow</td></tr>
+      <tr><td>Atelier schedule format (Excel + printable)</td><td>Nicole</td><td>Cannot design atelier scheduling module</td></tr>
+      <tr><td>Final fitting room names per store (post-renovation)</td><td>Nicole</td><td>Cannot configure booking engine room master</td></tr>
+      <tr><td>Operating hours per branch (country exceptions)</td><td>Nicole</td><td>Cannot configure booking engine scheduling windows</td></tr>
+      <tr><td>Service types + standard durations per type</td><td>Nicole</td><td>Cannot configure appointment duration defaults</td></tr>
+      <tr><td>Discount matrix by role / country / collection</td><td>Nicole</td><td>Cannot configure pricing rules</td></tr>
+      <tr><td>Escalation matrix per stage / product / store</td><td>Nicole</td><td>Cannot configure escalation workflows</td></tr>
+      <tr><td>Full social handles list per brand (IG, TikTok, Snapchat, FB)</td><td>Nicole</td><td>Cannot set up LeadChain</td></tr>
+      <tr><td>Email provider per country (Gmail vs Outlook)</td><td>Nicole / George</td><td>Cannot configure email routing</td></tr>
+      <tr><td>WhatsApp Business verification status per number</td><td>Nicole</td><td>Cannot begin WhatsApp integration</td></tr>
+      <tr><td>Phone number validation patterns per country</td><td>Nicole</td><td>Cannot implement duplicate detection correctly</td></tr>
+      <tr><td>Guarantee amounts per item + per country</td><td>Nicole</td><td>Cannot configure rental deposit flows</td></tr>
+      <tr><td>~100 reminder + survey templates (by type/store/brand, including Arabic)</td><td>Nicole</td><td>Cannot configure notification framework</td></tr>
+      <tr><td>Noria APIs + sub-forms for wish list / stock list / website integration</td><td>George / Nicole</td><td>Cannot begin integration design</td></tr>
+      <tr><td>Total staff per country/role + licensing count</td><td>Nicole</td><td>Cannot confirm Zoho user licensing</td></tr>
+    </tbody>
+  </table>
+
+  <div class="sec-label">Documented Assumptions</div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    <div class="assumption"><span class="gap-icon">A</span><span>Single Zoho CRM organisation for all 4 countries is feasible without performance degradation. Must support future addition of stores and countries without restructuring.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>PayTabs supports multi-currency transactions (AED, SAR, LBP) and per-country webhook callbacks.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>Noria ERP will expose sufficient APIs for the agreed integration points within the project timeline. No legacy constraints assumed but not yet confirmed.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>ESPOSA team will provide all ~100 reminder/survey templates before the notification framework build phase begins.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>The Zoho WorkDrive storage approach for images is acceptable performance-wise. Additional storage will be procured as volume grows.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>Historical data import (3 years of contacts + appointment history) will be performed from Excel templates after data model lock. Validation and clean-up coordinated jointly.</span></div>
+    <div class="assumption"><span class="gap-icon">A</span><span>Target implementation timeline: 6 months from statement of work sign-off.</span></div>
+  </div>
+
+  <div class="sec-label">Items Explicitly Out of Scope</div>
+  <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:24px">
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Wholesale:</strong> Entirely in Noria ERP. No CRM touch.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Vendor inquiries:</strong> Managed in ERP. No CRM touch.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Invoicing from CRM:</strong> ERP raises all invoices. CRM only instructs and receives status.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Zoho People customisation:</strong> Standard config only (employees, attendance, leave). Payroll stays in Noria.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Cloud telephony:</strong> Parked. To be revisited when ESPOSA moves to cloud telephony provider.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Fitting videos storage in CRM:</strong> Remain on existing external channel.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>We Do sourcing flow:</strong> Inventory visibility only. Sourcing/vendor in ERP.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>AI-generated dress image from fabric selection:</strong> Parked for later phase.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Deep atelier production workflow automation:</strong> Phased — achievable steps first.</p></div>
+    <div class="card-sm"><p style="font-size:12px;color:var(--text2)">❌ <strong>Attendance enforcement:</strong> Roster is planning only. Not a punching/enforcement system.</p></div>
+  </div>
+
+  <div class="sec-label">Upcoming Sessions Required</div>
+  <div class="grid-2">
+    <div class="card-sm card-accent"><h4 style="font-size:12px;font-weight:600;color:var(--accent);margin-bottom:4px">Dedicated Form Sessions</h4><p style="font-size:11px;color:var(--text2)">Design and finalise all digital forms: consultation questionnaires, measurement sheet, modification sheet, custom-made questionnaire, contract template.</p></div>
+    <div class="card-sm card-teal"><h4 style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:4px">Marketing Workshop</h4><p style="font-size:11px;color:var(--text2)">Regional marketing team + creative director. WhatsApp strategy, social channels, lead generation, SMS regulatory constraints per country.</p></div>
+    <div class="card-sm card-amber"><h4 style="font-size:12px;font-weight:600;color:var(--amber);margin-bottom:4px">Technical & Integration Session (≈2 months out)</h4><p style="font-size:11px;color:var(--text2)">Noria team, Zoho dev team. APIs, sub-forms, wish list integration, stock list, website-to-CRM contact sync. After design freeze to avoid rework.</p></div>
+    <div class="card-sm card-coral"><h4 style="font-size:12px;font-weight:600;color:var(--coral);margin-bottom:4px">Wish List & iPad Likes Session</h4><p style="font-size:11px;color:var(--text2)">How bride's dress selections (website + in-store iPad) are linked to the correct CRM profile. Technical approach and unique identifier (email) to be confirmed.</p></div>
+  </div>
+</div>
+
+<script>
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  event.target.classList.add('active');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
